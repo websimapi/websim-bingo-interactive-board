@@ -72,7 +72,7 @@ const Header = () => {
     }
   );
 };
-const Cell = ({ value, highlighted, circleProgress, isHeader }) => {
+const Cell = ({ value, highlighted, circleProgress, isHeader, recentlyCalled }) => {
   const isFree = typeof value === "string" && value.toLowerCase().includes("free");
   const borderWidth = isHeader ? HEADER_BORDER : CELL_BORDER;
   const fontSize = isHeader ? 84 : 56;
@@ -81,6 +81,7 @@ const Cell = ({ value, highlighted, circleProgress, isHeader }) => {
   return /* @__PURE__ */ jsxDEV(
     "div",
     {
+      className: recentlyCalled && !isHeader ? "bingo-called" : "",
       style: {
         width: CELL,
         height: CELL,
@@ -118,7 +119,7 @@ const Cell = ({ value, highlighted, circleProgress, isHeader }) => {
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 106,
+            lineNumber: 107,
             columnNumber: 9
           }
         ),
@@ -138,13 +139,13 @@ const Cell = ({ value, highlighted, circleProgress, isHeader }) => {
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 122,
+            lineNumber: 123,
             columnNumber: 9
           }
         ),
         /* @__PURE__ */ jsxDEV("div", { style: { zIndex: 1 }, children: isFree ? "FREE" : value }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 133,
+          lineNumber: 134,
           columnNumber: 7
         })
       ]
@@ -170,6 +171,15 @@ const BingoCardClip = ({ match = {} }) => {
     frame: Number.isFinite(d.frame) ? d.frame : 0
   })) : [];
   const replayData = match.replayData || null;
+  const drawFrameByNumber = {};
+  replayDraws.forEach((d) => {
+    if (!Number.isFinite(d.number)) return;
+    if (drawFrameByNumber[d.number] == null) {
+      drawFrameByNumber[d.number] = d.frame;
+    } else {
+      drawFrameByNumber[d.number] = Math.min(drawFrameByNumber[d.number], d.frame);
+    }
+  });
   const drawnNumbers = replayDraws.filter((d) => frame >= d.frame).map((d) => d.number);
   const visibleDraws = replayDraws.filter((d) => frame >= d.frame);
   const cellProgress = {};
@@ -236,7 +246,7 @@ const BingoCardClip = ({ match = {} }) => {
               false,
               {
                 fileName: "<stdin>",
-                lineNumber: 234,
+                lineNumber: 246,
                 columnNumber: 11
               }
             ),
@@ -273,7 +283,7 @@ const BingoCardClip = ({ match = {} }) => {
                     false,
                     {
                       fileName: "<stdin>",
-                      lineNumber: 259,
+                      lineNumber: 271,
                       columnNumber: 13
                     }
                   ),
@@ -290,7 +300,7 @@ const BingoCardClip = ({ match = {} }) => {
                       children: [
                         visibleDraws.length === 0 && /* @__PURE__ */ jsxDEV("div", { style: { fontSize: 24, color: "#777", marginTop: 20 }, children: "Ready" }, void 0, false, {
                           fileName: "<stdin>",
-                          lineNumber: 283,
+                          lineNumber: 295,
                           columnNumber: 17
                         }),
                         visibleDraws.map((d, idx) => {
@@ -315,12 +325,12 @@ const BingoCardClip = ({ match = {} }) => {
                               children: [
                                 /* @__PURE__ */ jsxDEV("div", { style: { fontSize: 32, fontWeight: 800, color: "#555", lineHeight: 1, marginTop: 4 }, children: letter }, void 0, false, {
                                   fileName: "<stdin>",
-                                  lineNumber: 305,
+                                  lineNumber: 317,
                                   columnNumber: 20
                                 }),
                                 /* @__PURE__ */ jsxDEV("div", { style: { fontSize: 34, fontWeight: 900, lineHeight: 1, marginTop: -2 }, children: d.number }, void 0, false, {
                                   fileName: "<stdin>",
-                                  lineNumber: 306,
+                                  lineNumber: 318,
                                   columnNumber: 20
                                 })
                               ]
@@ -329,7 +339,7 @@ const BingoCardClip = ({ match = {} }) => {
                             true,
                             {
                               fileName: "<stdin>",
-                              lineNumber: 290,
+                              lineNumber: 302,
                               columnNumber: 17
                             }
                           );
@@ -340,7 +350,7 @@ const BingoCardClip = ({ match = {} }) => {
                     true,
                     {
                       fileName: "<stdin>",
-                      lineNumber: 273,
+                      lineNumber: 285,
                       columnNumber: 13
                     }
                   )
@@ -350,13 +360,13 @@ const BingoCardClip = ({ match = {} }) => {
               true,
               {
                 fileName: "<stdin>",
-                lineNumber: 247,
+                lineNumber: 259,
                 columnNumber: 11
               }
             )
           ] }, void 0, true, {
             fileName: "<stdin>",
-            lineNumber: 233,
+            lineNumber: 245,
             columnNumber: 9
           }),
           /* @__PURE__ */ jsxDEV("div", { style: { display: "flex", flexDirection: "column", alignItems: "center" }, children: /* @__PURE__ */ jsxDEV("div", { style: { display: "grid", gridTemplateColumns: `repeat(5, ${CELL}px)`, gap: GAP }, children: gridRows.map(
@@ -364,30 +374,42 @@ const BingoCardClip = ({ match = {} }) => {
               const highlighted = Array.isArray(highlights) && highlights[rIdx] && highlights[rIdx][cIdx];
               const progress = cellProgress[`${rIdx}-${cIdx}`] ?? 0;
               const isHeader = rIdx === 0 && Array.isArray(gridRows[0]) && String(gridRows[0][0]).length === 1 && gridRows[0].length === 5;
+              let recentlyCalled = false;
+              const cellNumber = Number(cell);
+              if (!isHeader && Number.isFinite(cellNumber)) {
+                const drawFrame = drawFrameByNumber[cellNumber];
+                if (Number.isFinite(drawFrame)) {
+                  const glowDurationFrames = Math.round(0.9 * 3 * 30);
+                  if (frame >= drawFrame && frame < drawFrame + glowDurationFrames) {
+                    recentlyCalled = true;
+                  }
+                }
+              }
               return /* @__PURE__ */ jsxDEV(
                 Cell,
                 {
                   value: cell,
                   highlighted,
                   circleProgress: progress,
-                  isHeader
+                  isHeader,
+                  recentlyCalled
                 },
                 `${rIdx}-${cIdx}`,
                 false,
                 {
                   fileName: "<stdin>",
-                  lineNumber: 329,
+                  lineNumber: 358,
                   columnNumber: 19
                 }
               );
             })
           ) }, void 0, false, {
             fileName: "<stdin>",
-            lineNumber: 315,
+            lineNumber: 327,
             columnNumber: 11
           }) }, void 0, false, {
             fileName: "<stdin>",
-            lineNumber: 313,
+            lineNumber: 325,
             columnNumber: 9
           })
         ]
@@ -396,24 +418,24 @@ const BingoCardClip = ({ match = {} }) => {
       true,
       {
         fileName: "<stdin>",
-        lineNumber: 219,
+        lineNumber: 231,
         columnNumber: 7
       }
     ),
     replayDraws.map(
       (d, idx) => d.audioUrl ? /* @__PURE__ */ jsxDEV(Sequence, { from: d.frame, children: /* @__PURE__ */ jsxDEV(Audio, { src: d.audioUrl }, void 0, false, {
         fileName: "<stdin>",
-        lineNumber: 349,
+        lineNumber: 379,
         columnNumber: 13
       }) }, `${d.number}-${idx}`, false, {
         fileName: "<stdin>",
-        lineNumber: 348,
+        lineNumber: 378,
         columnNumber: 11
       }) : null
     )
   ] }, void 0, true, {
     fileName: "<stdin>",
-    lineNumber: 218,
+    lineNumber: 230,
     columnNumber: 5
   });
 };
