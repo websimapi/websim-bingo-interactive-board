@@ -426,6 +426,7 @@ function InteractiveApp() {
         controls: true,
         inputProps: { match: matchForPlayer },
         autoplay: true,
+        numberOfSharedAudioTags: 10,
         style: { width: "100%", height: "100%" }
       },
       playerKey + (isReplayMode ? "-replay" : ""),
@@ -461,7 +462,7 @@ function InteractiveApp() {
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 393,
+            lineNumber: 394,
             columnNumber: 11
           },
           this
@@ -477,35 +478,35 @@ function InteractiveApp() {
           false,
           {
             fileName: "<stdin>",
-            lineNumber: 399,
+            lineNumber: 400,
             columnNumber: 11
           },
           this
         )
       ] }, void 0, true, {
         fileName: "<stdin>",
-        lineNumber: 392,
+        lineNumber: 393,
         columnNumber: 9
       }, this),
       /* @__PURE__ */ jsxDEV("div", { style: { width: "100%", fontSize: 12 }, children: [
         /* @__PURE__ */ jsxDEV("div", { style: { fontWeight: 700, marginBottom: 6 }, children: "Recorded actions JSON" }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 408,
+          lineNumber: 409,
           columnNumber: 11
         }, this),
         /* @__PURE__ */ jsxDEV("pre", { style: { whiteSpace: "pre-wrap", wordBreak: "break-word", background: "#f7f7f7", padding: 8, borderRadius: 6, maxHeight: 420, overflow: "auto" }, children: JSON.stringify(actions, null, 2) }, void 0, false, {
           fileName: "<stdin>",
-          lineNumber: 409,
+          lineNumber: 410,
           columnNumber: 11
         }, this)
       ] }, void 0, true, {
         fileName: "<stdin>",
-        lineNumber: 407,
+        lineNumber: 408,
         columnNumber: 9
       }, this)
     ] }, void 0, true, {
       fileName: "<stdin>",
-      lineNumber: 391,
+      lineNumber: 392,
       columnNumber: 7
     }, this)
   ] }, void 0, true, {
@@ -516,6 +517,6 @@ function InteractiveApp() {
 }
 createRoot(document.getElementById("app")).render(/* @__PURE__ */ jsxDEV(InteractiveApp, {}, void 0, false, {
   fileName: "<stdin>",
-  lineNumber: 418,
+  lineNumber: 419,
   columnNumber: 51
 }));
